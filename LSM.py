@@ -70,5 +70,65 @@ def TransformedLaminaStiffnessMatrix(df,FiberAngle):
     df.to_csv (r'LSM_Transformed.csv', index = True, header=True)
     return df
 
+def ABDMatrix(df,FiberAngle,z):
+    AmountLayers = list(range(0, len(FiberAngle)))
+    
+    #Create empty 6x6 matrix
+    ABD =  np.zeros((6,6))
+    ABDdf = pd.DataFrame({'Column1':ABD[:,0],
+                                'Column2':ABD[:,1],
+                                'Column3':ABD[:,2],
+                                'Column4':ABD[:,3],
+                                'Column5':ABD[:,4],
+                                'Column6':ABD[:,5]})
+
+    print('Amount of Layers= ' + str(AmountLayers))
+    print('z= ' + str(z))
+
+    y = 0 
+    for i in [0,1,2]:
+        for j in [0,1,2]:
+            sumA = 0
+            sumB = 0
+            sumD = 0
+            for k in AmountLayers:
+                #print('i=' + str(i))
+                #print('j=' + str(j))
+                #print('y=' + str(y))
+
+                sumA = sumA + df.iloc[i+y][j] * (z[k+1]     - z[k])
+                sumB = sumB + df.iloc[i+y][j] * (z[k+1]**2  - z[k]**2)
+                sumD = sumD + df.iloc[i+y][j] * (z[k+1]**3  - z[k]**3)
+
+
+                y = y + 3
+                if y == len(AmountLayers)*3:
+                    y = 0
+
+            ABDdf.iloc[i+y][j] =  sumA  #A extensional stiffness matrix
+            ABDdf.iloc[i+y+3][j] =  (1/2) * sumB  #B coupling matrix
+            ABDdf.iloc[i+y][j+3] =  (1/2) * sumB  #B coupling matrix
+            ABDdf.iloc[i+y+3][j+3] = (1/3) * sumD  #D bending stiffness matrix
+
+    np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
+
+    print(ABDdf)        
+    return ABDdf
+
+def z_LaminaPosition(LayerThickness,FiberAngle):
+    AmountOfLayers = len(FiberAngle)
+    TotalThickness = AmountOfLayers * LayerThickness
+
+    z_LaminaPositions = []
+    for i in list(range(0, len(FiberAngle)+1)):
+        z_LaminaPositions.append(TotalThickness/2 - i*LayerThickness)
+    
+    z_LaminaPositions.reverse()
+    print(z_LaminaPositions)
+    
+    return z_LaminaPositions
+
+    
+
     
 
