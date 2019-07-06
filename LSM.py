@@ -63,7 +63,7 @@ def TransformedLaminaStiffnessMatrix(df,FiberAngle):
 
         i = i + 3
 
-    print(df)
+    #print(df)
 
     #Export the DataFrame to text and csv 
     np.savetxt(r'LSM_Transformed.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
