@@ -112,7 +112,9 @@ def ABDMatrix(df,FiberAngle,z):
 
     np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
 
-    #print(ABDdf)        
+    print()
+    print('---------------ABD Matrix---------------')
+    print(ABDdf)        
     return ABDdf
 
 def z_LaminaPosition(LayerThickness,FiberAngle):

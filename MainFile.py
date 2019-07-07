@@ -1,9 +1,9 @@
-from LSM import LaminaStiffnessMatrix
-from LSM import TransformedLaminaStiffnessMatrix
-from LSM import z_LaminaPosition
-from LSM import ABDMatrix
-from LSM import Strain
-from LSM import Stress
+from CLT_FunctionsFile import LaminaStiffnessMatrix
+from CLT_FunctionsFile import TransformedLaminaStiffnessMatrix
+from CLT_FunctionsFile import z_LaminaPosition
+from CLT_FunctionsFile import ABDMatrix
+from CLT_FunctionsFile import Strain
+from CLT_FunctionsFile import Stress
 import numpy as np
 import pandas as pd
 
@@ -16,7 +16,7 @@ V21 =  V12 * (E2/E1)
 G12 = 3
 
 LayerThickness = 1
-FiberAngle = [0,0,0]
+FiberAngle = [0,0,0,0]
 NM = np.array([0,0,0,0,300,0])
 
 
@@ -27,5 +27,5 @@ LSMdf = TransformedLaminaStiffnessMatrix(LSMdf, FiberAngle)
 z = z_LaminaPosition(LayerThickness,FiberAngle)
 ABDdf = ABDMatrix(LSMdf,FiberAngle,z)
 Straindf = Strain(ABDdf,NM,z)
-Stressdf = Stress(LSMdf,Straindf)
+Stress(LSMdf,Straindf)
 
