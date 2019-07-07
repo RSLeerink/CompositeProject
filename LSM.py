@@ -124,7 +124,7 @@ def z_LaminaPosition(LayerThickness,FiberAngle):
         z_LaminaPositions.append(TotalThickness/2 - i*LayerThickness)
     
     z_LaminaPositions.reverse()
-    print(z_LaminaPositions)
+    #print(z_LaminaPositions)
     
     return z_LaminaPositions
 
