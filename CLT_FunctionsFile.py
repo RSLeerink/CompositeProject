@@ -1,7 +1,20 @@
 import numpy as np
 import pandas as pd
 
-def LaminaStiffnessMatrix(E1,E2,V12,V21,G12,N):
+def InputData(E1,E2,V12,V21,G12):
+    Inputs = {'Variables': ['E1','E2','V12','V21','G12'],
+            'Data': [E1,E2,V12,V21,G12]
+            }
+
+    InputDatadf = pd.DataFrame(Inputs,columns= ['Variables', 'Data'])
+
+    print()
+    print('-------Inputed data--------')
+    print(InputDatadf)
+    return InputDatadf
+
+def LaminaStiffnessMatrix(E1,E2,V12,V21,G12,FiberAngle):
+    N = len(FiberAngle) #Amount of layers defined by amount of Fiber angles
     #Calculations
     Q11 = (E1/(1-V12*V21))          
     Q12 = ((V12*E1)/(1-V12*V21))    
@@ -75,12 +88,12 @@ def ABDMatrix(df,FiberAngle,z):
     
     #Create empty 6x6 matrix
     ABD =  np.zeros((6,6))
-    ABDdf = pd.DataFrame({'Column1':ABD[:,0],
-                                'Column2':ABD[:,1],
-                                'Column3':ABD[:,2],
-                                'Column4':ABD[:,3],
-                                'Column5':ABD[:,4],
-                                'Column6':ABD[:,5]})
+    ABDdf = pd.DataFrame({'0':ABD[:,0],
+                                '1':ABD[:,1],
+                                '2':ABD[:,2],
+                                '3':ABD[:,3],
+                                '4':ABD[:,4],
+                                '5':ABD[:,5]})
 
     #print('Amount of Layers= ' + str(AmountLayers))
     #print('z= ' + str(z))
@@ -164,7 +177,6 @@ def Strain(ABDdf,NM,z):
     print('-------Strain in lamina--------')
     print(Straindf)
     return Straindf
-
     
 def Stress(LSMdf,Straindf):
     
