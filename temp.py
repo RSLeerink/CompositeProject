@@ -1,3 +1,5 @@
+import numpy as np
+
 FiberAngle = [0,0,0]
 z = [-1.5,-0.5,0.5,1.5]
 
@@ -10,8 +12,8 @@ LayerThickness = 1
 AmountOfLayers = len(FiberAngle)
 TotalThickness = AmountOfLayers * LayerThickness
 
-z = []
-for i in X:
-    z.append(TotalThickness/2 - i)
+a=np.arange(1,4)
+print(type(a))
+a = np.vstack(a)
 
-print(z)
+print(a)

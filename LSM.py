@@ -82,8 +82,8 @@ def ABDMatrix(df,FiberAngle,z):
                                 'Column5':ABD[:,4],
                                 'Column6':ABD[:,5]})
 
-    print('Amount of Layers= ' + str(AmountLayers))
-    print('z= ' + str(z))
+    #print('Amount of Layers= ' + str(AmountLayers))
+    #print('z= ' + str(z))
 
     y = 0 
     for i in [0,1,2]:
@@ -112,7 +112,7 @@ def ABDMatrix(df,FiberAngle,z):
 
     np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
 
-    print(ABDdf)        
+    #print(ABDdf)        
     return ABDdf
 
 def z_LaminaPosition(LayerThickness,FiberAngle):
@@ -128,7 +128,95 @@ def z_LaminaPosition(LayerThickness,FiberAngle):
     
     return z_LaminaPositions
 
-    
+def Strain(ABDdf,NM,z):
+    ABDInverse = np.linalg.inv(ABDdf)
+
+    kth = np.dot(ABDInverse,NM*10**-3)
+    eps_0 = kth[0:3:1]
+    kap_0 = kth[3:6:1]
+
+    zsurface = np.zeros(((len(z) - 1) * 2,))
+
+    # Redefines z from list to numpy array
+    z = np.ravel(z)
+    s = 0
+    #Aranges the top and bottom for each lamina
+    for i in np.arange(1,int(len(zsurface)/2)):
+        zsurface[i + s] = z[i]
+        s = s + 1
+        zsurface[i + s] = z[i]
+    zsurface[0] = z[0]
+    zsurface[-1] = z[-1]
+
+    #Makes the strain dataframe
+    Straindf = pd.DataFrame(columns=['X', 'Y', 'XY'])
+
+    #Loop that find the strain on eash lamina
+    for i in np.arange(0,len(zsurface)):
+        StrainLayer =  eps_0 + zsurface[i] * kap_0
+        Straindf.loc[i] = StrainLayer
+
+    np.savetxt(r'Strain.txt', Straindf.values, fmt='%5.2f', header  = 'Strain')
+
+    print()
+    print('-------Strain in lamina--------')
+    print(Straindf)
+    return Straindf
 
     
+def Stress(LSMdf,Straindf):
+    
+    Streesdf = pd.DataFrame(columns=['Sigma X (Mpa)', 'Sigma Y (Mpa)', 'Shear XY (Mpa)'])
+
+    k = 0
+    s = 0
+    for i in np.arange(0,3):
+        #From the strain DataFrame takes one lamina at a time
+        StrainLamina = Straindf.iloc[s,:]
+        #Converts from DataFrame to Numpy array
+        StrainLamina = StrainLamina.to_numpy()
+        
+        #Fixes the array orientation to vertical
+        StrainLamina = np.vstack(StrainLamina)
+
+        #Takes the kth entry of the LSM usses the same value for top and bottom strains
+        LSM = LSMdf.iloc[0+k:3+k,:] 
+        LSM = LSM.to_numpy()
+
+        #Looping varialbes
+        k = k + 3 #For LSM 1 x each loop
+        s = s + 1 #For Strain 2 x each loop 
+
+        # Calculates the stresses in the lamina
+        StreesLayer = np.dot(LSM,StrainLamina*10**3)
+
+        # Converts from vertical to horizontla array
+        StreesLayer = np.hstack(StreesLayer)
+
+        # Addes the stresses to the Stress DataFrame
+        Streesdf.loc[s] = StreesLayer
+
+        #From the strain DataFrame takes one lamina at a time
+        StrainLamina = Straindf.iloc[s,:]
+
+        #Converts from DataFrame to Numpy array
+        StrainLamina = StrainLamina.to_numpy()
+        
+        #Fixes the array orientation to vertical
+        StrainLamina = np.vstack(StrainLamina)
+
+        StreesLayer = np.dot(LSM,StrainLamina*10**3)
+        
+        #Looping varible
+        s = s + 1
+
+        # Converts from vertical to horizontla array
+        StreesLayer = np.hstack(StreesLayer)
+
+        # Addes the stresses to the Stress DataFrame
+        Streesdf.loc[s] = StreesLayer
+
+    print()
+    print('---------------Stresses in lamina---------------')
+    print(Streesdf)
 
