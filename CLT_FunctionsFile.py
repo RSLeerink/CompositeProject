@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime
+from datetime import time
 
 def InputData(E1,E2,V12,V21,G12):
     Inputs = {'Variables': ['E1','E2','V12','V21','G12'],
@@ -234,3 +236,11 @@ def Stress(LSMdf,Straindf):
     print('---------------Stresses in lamina---------------')
     print(Streesdf)
 
+def FileNameDef(ProjectName,LayuppNumber):
+    #Takes the curent time and date
+    now = datetime.now()
+    t = now.strftime("%H_%M")
+    d = now.strftime('%d_%m_%Y')
+
+    FileName = 'P-' + ProjectName + '_LN-' + LayuppNumber + '__' + d + '_' + t
+    return FileName
