@@ -235,6 +235,7 @@ def Stress(LSMdf,Straindf):
     print()
     print('---------------Stresses in lamina---------------')
     print(Streesdf)
+    return Streesdf
 
 def FileNameDef(ProjectName,LayuppNumber):
     #Takes the curent time and date

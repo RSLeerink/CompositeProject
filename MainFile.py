@@ -21,8 +21,8 @@ V21 =  V12 * (E2/E1)    #Unitless
 G12 = 3                 #Unitless
 
 LayerThickness = 1
-FiberAngle = [90,90,90,90]
-NM = np.array([0,0,0,0,300,0])
+FiberAngle = [-45,45,0,0,0]
+NM = np.array([0,0,0,0,400,0])
 
 #Calculations
 FileName = FileNameDef(ProjectName,LayuppNumber)
@@ -32,6 +32,7 @@ LSMdf = TransformedLaminaStiffnessMatrix(LSMdf, FiberAngle)
 z = z_LaminaPosition(LayerThickness,FiberAngle)
 ABDdf = ABDMatrix(LSMdf,FiberAngle,z)
 Straindf = Strain(ABDdf,NM,z)
-Stress(LSMdf,Straindf)
+Stressdf = Stress(LSMdf,Straindf)
 
-Straindf.to_csv(FileName + '_StrainX.csv',index=False)
+Straindf.to_csv(FileName + ' Strain.csv',index=False)
+Stressdf.to_csv(FileName + ' Stress.csv',index=False)
