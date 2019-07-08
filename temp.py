@@ -1,19 +1,30 @@
+import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+from glob import glob
 
-FiberAngle = [0,0,0]
-z = [-1.5,-0.5,0.5,1.5]
 
-a = len(FiberAngle)
-print(list(range(0, a)))
+filenames = glob('Strain*.csv')
 
-X = list(range(0, len(FiberAngle)+1))
+dataframes = [pd.read_csv(f) for f in filenames]
 
-LayerThickness = 1
-AmountOfLayers = len(FiberAngle)
-TotalThickness = AmountOfLayers * LayerThickness
+#for i in np.arange(0,len(dataframes)):
+#    print(dataframes[i])
 
-a=np.arange(1,4)
-print(type(a))
-a = np.vstack(a)
+df1 = dataframes[0]
+df2 = dataframes[1]
 
-print(a)
+a = abs(df1.iloc[0:1][:])
+b = abs(df2.iloc[0:1][:])
+
+#df1.plot(kind='scatter',x='X',y=df1.index.values,color='red')
+#df1.plot.bar(x='X')
+#plt.show()
+
+c = df1.index.values
+d = df1['X'].tolist()
+e = df2['X'].tolist()
+
+plt.plot(c, d)
+plt.plot(c, e)
+plt.show()

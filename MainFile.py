@@ -16,7 +16,7 @@ V21 =  V12 * (E2/E1)    #Unitless
 G12 = 3                 #Unitless
 
 LayerThickness = 1
-FiberAngle = [0,0,0,0]
+FiberAngle = [0,45,-45,-45,45,0]
 NM = np.array([0,0,0,0,300,0])
 
 #Calculations
@@ -29,3 +29,5 @@ ABDdf = ABDMatrix(LSMdf,FiberAngle,z)
 Straindf = Strain(ABDdf,NM,z)
 Stress(LSMdf,Straindf)
 
+
+Straindf.to_csv('StrainX.csv',index=False)

@@ -1,6 +1,6 @@
 # CompositeProject
 
-Bassed on CLT Theory
+Based on CLT Theory
 
 Currently the lamina all have to be of the samme material and thickness
 
