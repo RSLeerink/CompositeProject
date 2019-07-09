@@ -34,5 +34,5 @@ ABDdf = ABDMatrix(LSMdf,FiberAngle,z)
 Straindf = Strain(ABDdf,NM,z)
 Stressdf = Stress(LSMdf,Straindf)
 
-Straindf.to_csv(FileName + ' Strain.csv',index=False)
-Stressdf.to_csv(FileName + ' Stress.csv',index=False)
+#Straindf.to_csv(FileName + ' Strain.csv',index=False)
+#Stressdf.to_csv(FileName + ' Stress.csv',index=False)

@@ -40,8 +40,8 @@ def LaminaStiffnessMatrix(E1,E2,V12,V21,G12,FiberAngle):
     df = pd.concat([df]*N)
 
     #Export the DataFrame to text and csv 
-    np.savetxt(r'LSM.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
-    df.to_csv (r'LSM.csv', index = True, header=True)
+    #np.savetxt(r'LSM.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
+    #df.to_csv (r'LSM.csv', index = True, header=True)
     return df 
 
 def TransformedLaminaStiffnessMatrix(df,FiberAngle):
@@ -125,7 +125,7 @@ def ABDMatrix(df,FiberAngle,z):
             ABDdf.iloc[i+y][j+3] =  (1/2) * sumB  #B coupling matrix
             ABDdf.iloc[i+y+3][j+3] = (1/3) * sumD  #D bending stiffness matrix
 
-    np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
+    #np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
 
     print()
     print('---------------ABD Matrix---------------')
@@ -173,7 +173,7 @@ def Strain(ABDdf,NM,z):
         StrainLayer =  eps_0 + zsurface[i] * kap_0
         Straindf.loc[i] = StrainLayer
 
-    np.savetxt(r'Strain.txt', Straindf.values, fmt='%5.2f', header  = 'Strain')
+    #np.savetxt(r'Strain.txt', Straindf.values, fmt='%5.2f', header  = 'Strain')
 
     print()
     print('-------Strain in lamina--------')
