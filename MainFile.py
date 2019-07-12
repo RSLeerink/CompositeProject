@@ -35,7 +35,6 @@ LayerThickness = 1
 FiberAngle = [45,90,90,45]
 NM = np.array([0,0,0,0,200,0])
 
-
 #
 #
 #   Input end
