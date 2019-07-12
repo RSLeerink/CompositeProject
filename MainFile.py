@@ -32,7 +32,7 @@ V21 =  V12 * (E2/E1)    #Unitless
 G12 = 3                 #Unitless
 
 LayerThickness = 1
-FiberAngle = [0,0,0,0]
+FiberAngle = [45,90,90,45]
 NM = np.array([0,0,0,0,200,0])
 
 
@@ -63,7 +63,7 @@ Stressdf = Stressdf.reset_index()
 #Stressdf.to_html('filename.html')
 
 #Straindf.to_csv(FileName + ' Strain.csv',index=False)
-#Stressdf.to_csv(FileName + ' Stress.csv',index=False)
+Stressdf.to_csv(FileName + ' Stress.csv',index=False)
 
 print()
 print('FileName:' + FileName)

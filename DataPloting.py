@@ -5,9 +5,22 @@ from glob import glob
 import sys 
 
 
+#
+#
+#   Options start
+#
+#
+
 # WhatToPlot: 1 = Strain, 2 = Stress
 WhatToPlot = 2
 
+#
+#
+#   Options end
+#
+#
+
+#Selction for what to plot
 if WhatToPlot == 1:
     WhatToPlot = "Strain"
     print('Strain')
@@ -18,13 +31,13 @@ else:
     print('Error WhatToPlot needs to be 1 or 2')
     sys.exit() 
 
-#filenames = glob('*Strain.csv')
+#   Reads the selected option to plot
 filenames = glob('*' + WhatToPlot + '.csv')
 print(filenames)
 
+#   Creates dataframes from selected files
 dataframes = [pd.read_csv(f) for f in filenames]
-print(dataframes)
-
+#print(dataframes)
 
 
 if WhatToPlot == "Strain":
@@ -55,6 +68,19 @@ for i in list(range(0, len(filenames))):
     #Layer number
     a = df.index.values + 1
 
+    #X ticks lable
+    X_Index = []
+    k = 1
+    while k < len(a):
+        print(k)
+        X_Index.append(str(k) + '-Top')
+        k = k + 1
+        X_Index.append(str(k) + '-Bottom')
+        k = k + 1
+
+    #a = str(a) + 'xxx'
+    print(a)
+    print(X_Index)
     #Reading each axis for each csv file
     XList = df[Xref].tolist()
     YList = df[Yref].tolist()
@@ -63,25 +89,34 @@ for i in list(range(0, len(filenames))):
     
     ax1.plot(a,XList)
     ax1.title.set_text(Xref)
-    plt.xlabel('Position')
-    plt.ylabel(Xref)
+    #plt.ylabel(Xref)
     ax1.grid(True)
-    plt.xticks(a)
+    ax1.set_xticks(a)
+    ax1.set_xticklabels(X_Index)
+    ax1.set_xlabel('Position')
+    ax1.set_ylabel(Xref)
     
     ax2.plot(a,YList)
     ax2.title.set_text(Yref)
-    plt.xlabel('Position')
-    plt.ylabel(Yref)
+    #plt.xlabel('Position')
+    #plt.ylabel(Yref)
     ax2.grid(True)
-    plt.xticks(a)
+    ax2.set_xticks(a)
+    ax2.set_xticklabels(X_Index)
+    ax2.set_xlabel('Position')
+    ax2.set_ylabel(Yref)
 
     ax3.plot(a,XYList)
     ax3.title.set_text(XYref)
-    plt.xlabel('Position')
-    plt.ylabel(XYref)
+    #plt.ylabel(XYref)
     ax3.grid(True)
-    plt.xticks(a)
+    ax3.set_xticks(a)
+    ax3.set_xticklabels(X_Index)
+    ax3.set_xlabel('Position')
+    ax3.set_ylabel(XYref)
 
+
+plt.tight_layout()
 plt.legend(filenames,loc='center left', bbox_to_anchor=(1, 0.5))
 plt.show()
 print("Script ran with no problem")
