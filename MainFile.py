@@ -18,6 +18,11 @@ T1 = datetime.now()
 #FileNaming
 ProjectName = 'Test'
 LayuppNumber = '1'
+#Include Time stamp?0 = no, 1 = yes
+TimeStamp = 0
+#Include Angle? 0 = no, 1 = yes
+Angle = 1
+
 
 #Inputs 
 E1 = 30                 #MPa
@@ -30,20 +35,20 @@ LayerThickness = 1
 FiberAngle = [0,0,0,0]
 NM = np.array([0,0,0,0,200,0])
 
+
 #
 #
-#   Calculations
+#   Input end
 #
 #
 
 Options  = {'ProjectName': [ProjectName],
             'LayuppNumber' : [LayuppNumber],
-            'TimeStamp': [0],
-            'Angle': [1],
+            'TimeStamp': [TimeStamp],
+            'Angle': [Angle],
             }
 
 Options =  DataFrame(Options, columns = ['ProjectName','LayuppNumber','TimeStamp','Angle'])
-
 FileName = FileNameDef(Options,FiberAngle)
 InputData(E1,E2,V12,V21,G12,FiberAngle)
 LSMdf = LaminaStiffnessMatrix(E1,E2,V12,V21,G12,FiberAngle)
