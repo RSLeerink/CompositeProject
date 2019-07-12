@@ -1,7 +1,16 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime
+from datetime import time
+import sys
 
-def InputData(E1,E2,V12,V21,G12):
+#
+#
+#Main functions
+#
+#
+
+def InputData(E1,E2,V12,V21,G12,FiberAngle):
     Inputs = {'Variables': ['E1','E2','V12','V21','G12'],
             'Data': [E1,E2,V12,V21,G12]
             }
@@ -11,6 +20,10 @@ def InputData(E1,E2,V12,V21,G12):
     print()
     print('-------Inputed data--------')
     print(InputDatadf)
+
+    print()
+    print('FiberAngle')
+    print(FiberAngle)
     return InputDatadf
 
 def LaminaStiffnessMatrix(E1,E2,V12,V21,G12,FiberAngle):
@@ -38,8 +51,8 @@ def LaminaStiffnessMatrix(E1,E2,V12,V21,G12,FiberAngle):
     df = pd.concat([df]*N)
 
     #Export the DataFrame to text and csv 
-    np.savetxt(r'LSM.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
-    df.to_csv (r'LSM.csv', index = True, header=True)
+    #np.savetxt(r'LSM.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
+    #df.to_csv (r'LSM.csv', index = True, header=True)
     return df 
 
 def TransformedLaminaStiffnessMatrix(df,FiberAngle):
@@ -79,8 +92,8 @@ def TransformedLaminaStiffnessMatrix(df,FiberAngle):
     #print(df)
 
     #Export the DataFrame to text and csv 
-    np.savetxt(r'LSM_Transformed.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
-    df.to_csv (r'LSM_Transformed.csv', index = True, header=True)
+    #np.savetxt(r'LSM_Transformed.txt', df.values, fmt='%5.2f', header  = 'Lamina stiffness matrix')
+    #df.to_csv (r'LSM_Transformed.csv', index = True, header=True)
     return df
 
 def ABDMatrix(df,FiberAngle,z):
@@ -123,7 +136,7 @@ def ABDMatrix(df,FiberAngle,z):
             ABDdf.iloc[i+y][j+3] =  (1/2) * sumB  #B coupling matrix
             ABDdf.iloc[i+y+3][j+3] = (1/3) * sumD  #D bending stiffness matrix
 
-    np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
+    #np.savetxt(r'ABDMatrix.txt', ABDdf.values, fmt='%5.2f', header  = 'ABDMatrix')
 
     print()
     print('---------------ABD Matrix---------------')
@@ -139,7 +152,10 @@ def z_LaminaPosition(LayerThickness,FiberAngle):
         z_LaminaPositions.append(TotalThickness/2 - i*LayerThickness)
     
     z_LaminaPositions.reverse()
-    #print(z_LaminaPositions)
+    print()
+    print('Lamina Top/Bottom positions')
+    print(z_LaminaPositions)
+
     
     return z_LaminaPositions
 
@@ -171,20 +187,27 @@ def Strain(ABDdf,NM,z):
         StrainLayer =  eps_0 + zsurface[i] * kap_0
         Straindf.loc[i] = StrainLayer
 
-    np.savetxt(r'Strain.txt', Straindf.values, fmt='%5.2f', header  = 'Strain')
+    #np.savetxt(r'Strain.txt', Straindf.values, fmt='%5.2f', header  = 'Strain')
+
+    NewIndexdf = pd.DataFrame({'Stress Location - z':  zsurface})
+    Strain_z_df = Straindf.reset_index()
+    Strain_z_df = Strain_z_df.join(NewIndexdf)
+    Strain_z_df = Strain_z_df.set_index('Stress Location - z')
+    Strain_z_df = Strain_z_df.drop(columns = 'index')
 
     print()
-    print('-------Strain in lamina--------')
-    print(Straindf)
+    print('------------------Strain in lamina----------------')
+    print(Strain_z_df)
     return Straindf
     
-def Stress(LSMdf,Straindf):
+def Stress(LSMdf,Straindf,z):
     
     Streesdf = pd.DataFrame(columns=['Sigma X (Mpa)', 'Sigma Y (Mpa)', 'Shear XY (Mpa)'])
 
     k = 0
     s = 0
-    for i in np.arange(0,3):
+    while True:
+        #for i in np.arange(0,(len(Straindf)/4)+1):
         #From the strain DataFrame takes one lamina at a time
         StrainLamina = Straindf.iloc[s,:]
         #Converts from DataFrame to Numpy array
@@ -230,7 +253,67 @@ def Stress(LSMdf,Straindf):
         # Addes the stresses to the Stress DataFrame
         Streesdf.loc[s] = StreesLayer
 
-    print()
-    print('---------------Stresses in lamina---------------')
-    print(Streesdf)
+        if s == len(Straindf):
+            break
+    
+    zsurface = np.zeros(((len(z) - 1) * 2,))
+    z = np.ravel(z)
+    s = 0
 
+    #Aranges the top and bottom for each lamina
+    for i in np.arange(1,int(len(zsurface)/2)):
+        zsurface[i + s] = z[i] 
+        s = s + 1
+        zsurface[i + s] = z[i]
+    zsurface[0] = z[0]
+    zsurface[-1] = z[-1]
+
+    NewIndexdf = pd.DataFrame({'Stress Location - z':  zsurface})
+    Stress_z_df = Streesdf.reset_index()
+    Stress_z_df = Stress_z_df.join(NewIndexdf)
+    Stress_z_df = Stress_z_df.set_index('Stress Location - z')
+    Stress_z_df = Stress_z_df.drop(columns = 'index')
+
+    print()
+    print('------------------------Stresses in lamina---------------------')
+    print(Stress_z_df)
+    return Stress_z_df
+    #To use other index:
+    #Stressdf = Stressdf.reset_index()
+
+
+def FileNameDef(Options,FiberAngle):
+    PN = Options['ProjectName'].iloc[0]
+    LUN = '_LN ' + Options['LayuppNumber'].iloc[0] + ' '
+    TS = Options['TimeStamp'].iloc[0]
+    FA = Options['Angle'].iloc[0]
+
+    #PN = PN.iloc[0]
+    print('----------------------TEST-----------------------')
+    print(PN)
+    print(LUN)
+    print(TS)
+    print(FA)
+
+    #Takes the curent time and date
+    if TS == 1:
+        now = datetime.now()
+        t = now.strftime("%H_%M")
+        d = ' TS_' + now.strftime('%d_%m_%Y') + '__'
+    else:
+        print('No time stamp added')
+        t = ''
+        d = ''
+    if FA == 1:
+        #Fiber angele
+        FiberAngle =  'FA ' + " ".join(str(item) for item in FiberAngle)
+    else:
+        FiberAngle = ''
+
+    #Creates FileName
+    FileName = 'P-' + PN  + LUN + FiberAngle  + d  + t 
+
+    print(FileName)
+    return FileName
+
+ 
