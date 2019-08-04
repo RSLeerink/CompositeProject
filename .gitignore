@@ -1,0 +1,3 @@
+#Ignor folders
+GUI/kivy_venv
+GUI/__pycache__
